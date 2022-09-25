@@ -1,0 +1,44 @@
+body {
+    color: #fff;
+    background-color: #4F8BF9;
+}
+
+.stButton>button {
+    color: #4F8BF9;
+/*
+    border-radius: 50%;
+    height: 3em;
+    width: 3em;
+*/
+}
+
+
+.stNumberInput>div>div>div>input {
+    color: #4F8BF9;
+    background-color: gold;
+}
+
+.stSlider>label, .stRadio>label, .stNumberInput>label {
+    color: white;
+    font-size: 20px;
+}
+
+.stMarkdown>div {
+    margin-top: -80px;
+    text-align: center;
+}
+
+.stMarkdown>div>p {
+    margin-top: 50px;
+    text-align: left;
+    color: yellow;
+    font-size: 20px;
+}
+
+.stRadio>div {
+    flex-direction:row;
+}
+
+.stTextInput>div>div>input {
+    color: #4F8BF9;
+}
