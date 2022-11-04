@@ -64,7 +64,7 @@ def predict(carat, cut, color, clarity, depth, table, x, y, z):
 st.title('Diamond Price Predictor')
 st.image("""https://www.thestreet.com/.image/ar_4:3%2Cc_fill%2Ccs_srgb%2Cq_auto:good%2Cw_1200/MTY4NjUwNDYyNTYzNDExNTkx/why-dominion-diamonds-second-trip-to-the-block-may-be-different.png""")
 st.header('Enter the characteristics of the diamond:')
-carat = st.number_input('Carat Weight:', min_value=0.1, max_value=10.0, value=1.0)
+carat = st.number_input('一级发酵罐总体积（立方米）:', min_value=0.1, max_value=10.0, value=1.0)
 cut = st.selectbox('Cut Rating:', ['Fair', 'Good', 'Very Good', 'Premium', 'Ideal'])
 color = st.selectbox('Color Rating:', ['J', 'I', 'H', 'G', 'F', 'E', 'D'])
 clarity = st.selectbox('Clarity Rating:', ['I1', 'SI2', 'SI1', 'VS2', 'VS1', 'VVS2', 'VVS1', 'IF'])
