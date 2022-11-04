@@ -306,3 +306,20 @@ st.sidebar.info(
 )
 
 st.title("To Be Continued......")
+import streamlit as st
+import pandas as pd
+
+d1 = ['CSTR', 'USR', 'UASB' ]
+df1 = pd.DataFrame(data=d1)
+
+selection =  st.selectbox('发酵工艺:', ['CSTR', 'USR', 'UASB'])
+
+for i in d1:
+    if selection==d1[0]:
+        id_selected=0
+    elif selection==d1[1]:
+        id_selected = 1
+    else:
+        id_selected = 2
+result=id_selected
+
