@@ -1,6 +1,6 @@
 import pandas as pd
 from xgboost import XGBRegressor
-import seaborn as sns
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
@@ -13,6 +13,11 @@ df = diagrams_df.copy()
 # Separating X and y
 X = df.drop(['amount_of_electricity_fed_into_the_grid'], axis=1)
 y = df['amount_of_electricity_fed_into_the_grid']
+
+std_x = StandardScaler()
+
+X = std_x.fit_transform(X)
+
 
 X_train_val, X_test, y_train_val, y_test = train_test_split(X, y, test_size=0.2, random_state=4)
 
@@ -58,5 +63,4 @@ print("MSE:", mean_squared_error(y_test, fit_model.predict(X_test)))
 print("R2:", r2_score(y_test, fit_model.predict(X_test)))
 
 # Saving the model
-import pickle
-pickle.dump(xgb_cv, open('economy_amount_of_electricity_fed_into_the_grid_predict.pkl', 'wb'))
+fit_model.save_model('../models/economy_amount_of_electricity_fed_into_the_grid_predict.json')
