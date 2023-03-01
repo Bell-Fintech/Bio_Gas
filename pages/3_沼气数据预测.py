@@ -24,7 +24,7 @@ st.sidebar.info(
     """
 )
 
-st.title("数据预测")
+st.title("数据预测功能")
 
 
 def load_css(file_name):
