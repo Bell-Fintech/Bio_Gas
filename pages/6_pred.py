@@ -153,9 +153,7 @@ def eval_model(bst, X_test, y_test):
     r2 = r2_score(y_test, y_pred)
     mse = mean_squared_error(y_test, y_pred)
     mae = mean_absolute_error(y_test, y_pred)
-    st.write('R-Squared:', round(r2, 2))
     st.write('Mean Squared Error:', round(mse, 2))
-    st.write('Mean Absolute Error:', round(mae, 2))
     return y_pred
 
 # 定义函数：下载结果数据集
@@ -184,9 +182,7 @@ if df is not None:
     st.write('## 模型评估')
     df_result = eval_model(bst, X_test, y_test)
     st.write(df_result.head(10))
-    st.write(f'R2 Score: {df_result["R2 Score"][0]}')
     st.write(f'Mean Squared Error: {df_result["Mean Squared Error"][0]}')
-    st.write(f'Mean Absolute Error: {df_result["Mean Absolute Error"][0]}')
 
     # 下载结果数据集
     st.markdown(download_results(df_result), unsafe_allow_html=True)
