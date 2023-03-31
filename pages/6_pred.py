@@ -25,72 +25,72 @@ st.sidebar.info(
 )
 
 st.title("XGBoost沼气产量预测模型训练")
-
 import streamlit as st
 import pandas as pd
 import xgboost as xgb
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
 
-def load_data(file):
-    data = pd.read_csv(file)
-    return data
+# 加载数据集
+uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
+if uploaded_file is not None:
+    data = pd.read_csv(uploaded_file)
+else:
+    data = pd.read_csv("my_data.csv") # 默认数据集
 
-def create_model(train_data, target, **params):
-    model = xgb.XGBRegressor(**params)
-    model.fit(train_data, target)
-    return model
+# 显示数据集的前5行
+st.write("Data Preview:")
+st.write(data.head())
 
-def predict(model, test_data):
-    predictions = model.predict(test_data)
-    return predictions
+# 选择目标变量和特征变量
+target_variable = st.selectbox("Select target variable", data.columns)
+feature_variables = st.multiselect("Select feature variables", data.columns)
 
-def download_csv(data, filename):
-    csvfile = data.to_csv(index=False)
-    return csvfile.encode()
+# 拆分数据集为训练集和测试集
+train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
 
+# 定义XGBoost模型参数
+params = {
+    "max_depth": st.slider("Maximum depth", 1, 10, 3),
+    "learning_rate": st.slider("Learning rate", 0.01, 0.5, 0.1),
+    "n_estimators": st.slider("Number of estimators", 10, 500, 100),
+    "objective": "reg:squarederror"
+}
 
+# 训练XGBoost模型
+X_train = train_data[feature_variables]
+y_train = train_data[target_variable]
+X_test = test_data[feature_variables]
+y_test = test_data[target_variable]
+model = xgb.XGBRegressor(**params)
+model.fit(X_train, y_train)
 
-st.title('XGBoost Model Builder')
+# 在测试集上评估模型性能
+y_pred = model.predict(X_test)
+mse = mean_squared_error(y_test, y_pred)
+st.write("Mean squared error:", mse)
 
-# Upload data
-st.sidebar.subheader('Upload data')
-file = st.sidebar.file_uploader('Choose a CSV file', type='csv')
+# 显示特征重要性
+st.write("Feature importances:")
+importance_df = pd.DataFrame({
+    "Feature": feature_variables,
+    "Importance": model.feature_importances_
+}).sort_values(by="Importance", ascending=False)
+st.bar_chart(importance_df)
 
-if file is not None:
-    data = load_data(file)
-
-    # Display data
-    st.subheader('Data preview')
-    st.write(data.head())
-
-    # Select target column
-    st.sidebar.subheader('Select target column')
-    target_col = st.sidebar.selectbox('Target column', data.columns)
-
-    # Select features columns
-    st.sidebar.subheader('Select features columns')
-    features_cols = st.sidebar.multiselect('Features columns', data.columns)
-
-    # Select model parameters
-    st.sidebar.subheader('Select model parameters')
-    params = {}
-    params['n_estimators'] = st.sidebar.slider('Number of estimators', 100, 1000, 500)
-    params['max_depth'] = st.sidebar.slider('Max depth', 1, 10, 5)
-
-    # Train model
-    X = data[features_cols]
-    y = data[target_col]
-    model = create_model(X, y, **params)
-
-    # Prediction
-    st.subheader('Prediction')
-    inputs = {}
-    for feature_col in features_cols:
-        inputs[feature_col] = st.number_input(feature_col, min_value=0.0, step=0.01)
-    inputs_df = pd.DataFrame(inputs, index=[0])
-    prediction = predict(model, inputs_df)
-    st.write(f'The prediction is {prediction[0]:,.2f}.')
-
-    # Download predictions
-    if st.button('Download predictions'):
-        csvfile = download_csv(inputs_df, 'predictions')
-        st.download_button(label="Download predictions CSV", data=csvfile, file_name='predictions.csv', mime='text/csv')
+# 上传要预测的数据集
+st.write("Make predictions:")
+prediction_file = st.file_uploader("Upload a CSV file to make predictions", type="csv")
+if prediction_file is not None:
+    prediction_data = pd.read_csv(prediction_file)
+    predictions = model.predict(prediction_data[feature_variables])
+    prediction_data[target_variable] = predictions
+    st.write("Predictions:")
+    st.write(prediction_data)
+    prediction_data.to_csv("predictions.csv", index=False)
+    st.download_button(
+        label="Download predictions as CSV",
+        data=prediction_data.to_csv(index=False),
+        file_name="predictions.csv",
+        mime="text/csv"
+    )
