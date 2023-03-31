@@ -26,60 +26,71 @@ st.sidebar.info(
 
 st.title("XGBoost沼气产量预测模型训练")
 
-
 import streamlit as st
 import pandas as pd
 import xgboost as xgb
 
-# Load data function
 def load_data(file):
     data = pd.read_csv(file)
     return data
 
-# Create XGBoost model function
 def create_model(train_data, target, **params):
     model = xgb.XGBRegressor(**params)
     model.fit(train_data, target)
     return model
 
-# Prediction function
 def predict(model, test_data):
     predictions = model.predict(test_data)
     return predictions
 
-# Streamlit app
+def download_csv(data, filename):
+    csvfile = data.to_csv(index=False)
+    return csvfile.encode()
 
-st.title("XGBoost Model Builder")
+st.set_page_config(page_title='XGBoost Model Builder')
 
-# Upload file
-uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
-if uploaded_file is not None:
-    data = load_data(uploaded_file)
+st.title('XGBoost Model Builder')
 
-    # Display uploaded data
-    st.subheader("Data")
-    st.write(data)
+# Upload data
+st.sidebar.subheader('Upload data')
+file = st.sidebar.file_uploader('Choose a CSV file', type='csv')
+
+if file is not None:
+    data = load_data(file)
+
+    # Display data
+    st.subheader('Data preview')
+    st.write(data.head())
 
     # Select target column
-    target_col = st.selectbox("Select target column", data.columns)
+    st.sidebar.subheader('Select target column')
+    target_col = st.sidebar.selectbox('Target column', data.columns)
+
+    # Select features columns
+    st.sidebar.subheader('Select features columns')
+    features_cols = st.sidebar.multiselect('Features columns', data.columns)
 
     # Select model parameters
-    n_estimators = st.slider("Number of estimators", 100, 1000, 500)
-    max_depth = st.slider("Max depth", 1, 10, 5)
+    st.sidebar.subheader('Select model parameters')
+    params = {}
+    params['n_estimators'] = st.sidebar.slider('Number of estimators', 100, 1000, 500)
+    params['max_depth'] = st.sidebar.slider('Max depth', 1, 10, 5)
 
     # Train model
-    X = data.drop(target_col, axis=1)
+    X = data[features_cols]
     y = data[target_col]
-    model_params = {"n_estimators": n_estimators, "max_depth": max_depth}
-    model = create_model(X, y, **model_params)
+    model = create_model(X, y, **params)
 
-    # Predict
-    st.subheader("Predictions")
-    predictions = predict(model, X)
-    st.write(predictions)
+    # Prediction
+    st.subheader('Prediction')
+    inputs = {}
+    for feature_col in features_cols:
+        inputs[feature_col] = st.number_input(feature_col, min_value=0.0, step=0.01)
+    inputs_df = pd.DataFrame(inputs, index=[0])
+    prediction = predict(model, inputs_df)
+    st.write(f'The prediction is {prediction[0]:,.2f}.')
 
     # Download predictions
-    output = pd.DataFrame({"Predictions": predictions})
-    output_csv = output.to_csv(index=False)
-    href = f'<a href="data:file/csv;base64,{b64encode(output_csv.encode()).decode()}" download="predictions.csv">Download Predictions CSV File</a>'
-    st.markdown(href, unsafe_allow_html=True)
+    if st.button('Download predictions'):
+        csvfile = download_csv(inputs_df, 'predictions')
+        st.download_button(label="Download predictions CSV", data=csvfile, file_name='predictions.csv', mime='text/csv')
