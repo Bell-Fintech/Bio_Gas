@@ -344,65 +344,62 @@ st.markdown("""
 [Example CSV input file](https://raw.githubusercontent.com/dataprofessor/data/master/penguins_example.csv)
 """)
 
-# Collects user input features into dataframe
-uploaded_file = st.file_uploader("Upload your input CSV file", type=["csv"])
-if uploaded_file is not None:
-    input_df = pd.read_csv(uploaded_file)
-else:
-    def user_input_features():
-        island = st.selectbox('Island',('Biscoe','Dream','Torgersen'))
-        sex = st.selectbox('Sex',('male','female'))
-        bill_length_mm = st.slider('Bill length (mm)', 32.1,59.6,43.9)
-        bill_depth_mm = st.slider('Bill depth (mm)', 13.1,21.5,17.2)
-        flipper_length_mm = st.slider('Flipper length (mm)', 172.0,231.0,201.0)
-        body_mass_g = st.slider('Body mass (g)', 2700.0,6300.0,4207.0)
-        data = {'island': island,
-                'bill_length_mm': bill_length_mm,
-                'bill_depth_mm': bill_depth_mm,
-                'flipper_length_mm': flipper_length_mm,
-                'body_mass_g': body_mass_g,
-                'sex': sex}
-        features = pd.DataFrame(data, index=[0])
-        return features
-    input_df = user_input_features()
+import streamlit as st
+import pandas as pd
+import xgboost as xgb
 
-# Combines user input features with entire penguins dataset
-# This will be useful for the encoding phase
-penguins_raw = pd.read_csv('https://raw.githubusercontent.com/dataprofessor/data/master/penguins_cleaned.csv')
-penguins = penguins_raw.drop(columns=['species'], axis=1)
-df = pd.concat([input_df,penguins],axis=0)
+# Load data function
+def load_data(file):
+    data = pd.read_csv(file)
+    return data
 
-# Encoding of ordinal features
-# https://www.kaggle.com/pratik1120/penguin-dataset-eda-classification-and-clustering
-encode = ['sex','island']
-for col in encode:
-    dummy = pd.get_dummies(df[col], prefix=col)
-    df = pd.concat([df,dummy], axis=1)
-    del df[col]
-df = df[:1] # Selects only the first row (the user input data)
+# Create XGBoost model function
+def create_model(train_data, target, **params):
+    model = xgb.XGBRegressor(**params)
+    model.fit(train_data, target)
+    return model
 
-# Displays the user input features
-st.subheader('User Input features')
+# Prediction function
+def predict(model, test_data):
+    predictions = model.predict(test_data)
+    return predictions
 
-if uploaded_file is not None:
-    st.write(df)
-else:
-    st.write('Awaiting CSV file to be uploaded. Currently using example input parameters (shown below).')
-    st.write(df)
+# Streamlit app
+def main():
+    st.title("XGBoost Model Builder")
 
+    # Upload file
+    uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
+    if uploaded_file is not None:
+        data = load_data(uploaded_file)
 
+        # Display uploaded data
+        st.subheader("Data")
+        st.write(data)
 
-# Reads in saved classification model
-load_clf = pickle.load(open('./models/penguins_clf.pkl', 'rb'))
+        # Select target column
+        target_col = st.selectbox("Select target column", data.columns)
 
-# Apply model to make predictions
-prediction = load_clf.predict(df)
-prediction_proba = load_clf.predict_proba(df)
+        # Select model parameters
+        n_estimators = st.slider("Number of estimators", 100, 1000, 500)
+        max_depth = st.slider("Max depth", 1, 10, 5)
 
+        # Train model
+        X = data.drop(target_col, axis=1)
+        y = data[target_col]
+        model_params = {"n_estimators": n_estimators, "max_depth": max_depth}
+        model = create_model(X, y, **model_params)
 
-st.subheader('Prediction')
-penguins_species = np.array(['Adelie','Chinstrap','Gentoo'])
-st.write(penguins_species[prediction])
+        # Predict
+        st.subheader("Predictions")
+        predictions = predict(model, X)
+        st.write(predictions)
 
-st.subheader('Prediction Probability')
-st.write(prediction_proba)
+        # Download predictions
+        output = pd.DataFrame({"Predictions": predictions})
+        output_csv = output.to_csv(index=False)
+        href = f'<a href="data:file/csv;base64,{b64encode(output_csv.encode()).decode()}" download="predictions.csv">Download Predictions CSV File</a>'
+        st.markdown(href, unsafe_allow_html=True)
+
+if __name__ == "__main__":
+    main()
