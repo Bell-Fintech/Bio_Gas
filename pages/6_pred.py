@@ -156,7 +156,7 @@ def eval_model(bst, X_test, y_test):
     st.write('R-Squared:', round(r2, 2))
     st.write('Mean Squared Error:', round(mse, 2))
     st.write('Mean Absolute Error:', round(mae, 2))
-    return df_result
+    return y_pred
 
 # 定义函数：下载结果数据集
 from io import BytesIO
