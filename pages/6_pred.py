@@ -47,7 +47,7 @@ def download_csv(data, filename):
     csvfile = data.to_csv(index=False)
     return csvfile.encode()
 
-st.set_page_config(page_title='XGBoost Model Builder')
+st.set_page_config(page_title="My Streamlit App", page_layout="wide")
 
 st.title('XGBoost Model Builder')
 
