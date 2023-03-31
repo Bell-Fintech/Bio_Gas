@@ -166,15 +166,6 @@ def download_results(df_result):
     href = f'<a href="data:file/csv;base64,{b64}" download="results.csv">下载结果数据集</a>'
     return href
 
-
-# 页面设置
-set_page({
-    'title': 'XGBoost建模',
-    'icon': 'random',
-    'layout': 'wide',
-    'sidebar': 'auto'
-})
-
 # 上传数据集
 df = load_data()
 
