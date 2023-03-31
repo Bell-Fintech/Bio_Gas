@@ -31,12 +31,20 @@ import xgboost as xgb
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
-# 加载数据集
-uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
-if uploaded_file is not None:
-    data = pd.read_csv(uploaded_file)
+
+# 添加上传数据集功能
+uploaded_file = st.file_uploader("上传数据集", type=["csv"])
+
+# 如果没有上传数据集，则提示用户上传
+if uploaded_file is None:
+    st.warning('请上传数据集')
 else:
-    data = pd.read_csv("my_data.csv") # 默认数据集
+    # 加载数据集
+    data = pd.read_csv(uploaded_file)
+
+    # 显示数据集
+    st.write('数据集：')
+    st.write(data.head())
 
 # 显示数据集的前5行
 st.write("Data Preview:")
