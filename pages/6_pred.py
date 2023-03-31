@@ -178,7 +178,6 @@ if df is not None:
     st.write('## 模型评估')
     df_result = eval_model(bst, X_test, y_test)
     st.write(df_result.head(10))
-    st.write(f'Mean Squared Error: {df_result["Mean Squared Error"][0]}')
 
     # 下载结果数据集
     st.markdown(download_results(df_result), unsafe_allow_html=True)
