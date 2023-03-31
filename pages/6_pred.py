@@ -148,15 +148,15 @@ def train_model(X_train, y_train, params):
 # 定义函数：模型评估
 def eval_model(bst, X_test, y_test):
     dtest = xgb.DMatrix(X_test, label=y_test)
-    y_pred = bst.predict(dtest)
+    y_pred_1 = bst.predict(dtest)
+    y_pred = pd.DataFrame({'预测值': y_pred_1})
     r2 = r2_score(y_test, y_pred)
     mse = mean_squared_error(y_test, y_pred)
     mae = mean_absolute_error(y_test, y_pred)
     st.write('R-Squared:', round(r2, 2))
     st.write('Mean Squared Error:', round(mse, 2))
     st.write('Mean Absolute Error:', round(mae, 2))
-    return y_pred
-
+    return df_result
 
 # 定义函数：下载结果数据集
 from io import BytesIO
