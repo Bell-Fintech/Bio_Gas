@@ -42,10 +42,6 @@ else:
     # 加载数据集
     data = pd.read_csv(uploaded_file)
 
-    # 显示数据集
-    st.write('数据集：')
-    st.write(data.head())
-
 # 显示数据集的前5行
 st.write("Data Preview:")
 st.write(data.head())
