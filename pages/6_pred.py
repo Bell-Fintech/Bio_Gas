@@ -305,24 +305,7 @@ st.sidebar.info(
     """
 )
 
-st.title("To Be Continued......")
-import streamlit as st
-import pandas as pd
-
-d1 = ['CSTR', 'USR', 'UASB' ]
-df1 = pd.DataFrame(data=d1)
-
-selection =  st.selectbox('发酵工艺:', ['CSTR', 'USR', 'UASB'])
-
-for i in d1:
-    if selection==d1[0]:
-        id_selected=0
-    elif selection==d1[1]:
-        id_selected = 1
-    else:
-        id_selected = 2
-result=id_selected
-
+st.title("XGBoost沼气产量预测模型训练")
 
 import streamlit as st
 import pandas as pd
@@ -365,41 +348,38 @@ def predict(model, test_data):
     return predictions
 
 # Streamlit app
-def main():
-    st.title("XGBoost Model Builder")
 
-    # Upload file
-    uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
-    if uploaded_file is not None:
-        data = load_data(uploaded_file)
+st.title("XGBoost Model Builder")
 
-        # Display uploaded data
-        st.subheader("Data")
-        st.write(data)
+# Upload file
+uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
+if uploaded_file is not None:
+    data = load_data(uploaded_file)
 
-        # Select target column
-        target_col = st.selectbox("Select target column", data.columns)
+    # Display uploaded data
+    st.subheader("Data")
+    st.write(data)
 
-        # Select model parameters
-        n_estimators = st.slider("Number of estimators", 100, 1000, 500)
-        max_depth = st.slider("Max depth", 1, 10, 5)
+    # Select target column
+    target_col = st.selectbox("Select target column", data.columns)
 
-        # Train model
-        X = data.drop(target_col, axis=1)
-        y = data[target_col]
-        model_params = {"n_estimators": n_estimators, "max_depth": max_depth}
-        model = create_model(X, y, **model_params)
+    # Select model parameters
+    n_estimators = st.slider("Number of estimators", 100, 1000, 500)
+    max_depth = st.slider("Max depth", 1, 10, 5)
 
-        # Predict
-        st.subheader("Predictions")
-        predictions = predict(model, X)
-        st.write(predictions)
+    # Train model
+    X = data.drop(target_col, axis=1)
+    y = data[target_col]
+    model_params = {"n_estimators": n_estimators, "max_depth": max_depth}
+    model = create_model(X, y, **model_params)
 
-        # Download predictions
-        output = pd.DataFrame({"Predictions": predictions})
-        output_csv = output.to_csv(index=False)
-        href = f'<a href="data:file/csv;base64,{b64encode(output_csv.encode()).decode()}" download="predictions.csv">Download Predictions CSV File</a>'
-        st.markdown(href, unsafe_allow_html=True)
+    # Predict
+    st.subheader("Predictions")
+    predictions = predict(model, X)
+    st.write(predictions)
 
-if __name__ == "__main__":
-    main()
+    # Download predictions
+    output = pd.DataFrame({"Predictions": predictions})
+    output_csv = output.to_csv(index=False)
+    href = f'<a href="data:file/csv;base64,{b64encode(output_csv.encode()).decode()}" download="predictions.csv">Download Predictions CSV File</a>'
+    st.markdown(href, unsafe_allow_html=True)
