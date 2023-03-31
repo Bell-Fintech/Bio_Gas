@@ -154,6 +154,7 @@ def eval_model(bst, X_test, y_test):
 
 # 定义函数：下载结果数据集
 from io import BytesIO
+import base64
 def download_results(df_result):
     csv = df_result.to_csv(index=False).encode()
     b = BytesIO(csv)
