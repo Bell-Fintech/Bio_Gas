@@ -132,7 +132,7 @@ def split_data(df):
     X = df.drop(y_col, axis=1)
     y = df[y_col]
     test_size = st.slider('测试集比例', min_value=0.1, max_value=0.5, value=0.3, step=0.1)
-    random_state = st.lider('随机数种子', min_value=0, max_value=100, value=42, step=1)
+    random_state = st.slider('随机数种子', min_value=0, max_value=100, value=42, step=1)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
     return X_train, X_test, y_train, y_test
 
