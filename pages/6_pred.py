@@ -117,22 +117,22 @@ def load_data():
 # 定义函数：模型参数设置
 def set_params():
     params = {}
-    params['objective'] = st.sidebar.selectbox('回归/分类', ['reg:squarederror', 'binary:logistic'])
-    params['n_estimators'] = st.sidebar.slider('树的数量', min_value=10, max_value=200, value=100, step=10)
-    params['max_depth'] = st.sidebar.slider('树的深度', min_value=1, max_value=20, value=3, step=1)
-    params['learning_rate'] = st.sidebar.slider('学习率', min_value=0.01, max_value=0.5, value=0.1, step=0.01)
-    params['gamma'] = st.sidebar.slider('Gamma', min_value=0.0, max_value=1.0, value=0.0, step=0.1)
-    params['min_child_weight'] = st.sidebar.slider('Min_child_weight', min_value=0.0, max_value=10.0, value=1.0, step=0.1)
+    params['objective'] = st.selectbox('回归/分类', ['reg:squarederror', 'binary:logistic'])
+    params['n_estimators'] = st.slider('树的数量', min_value=10, max_value=200, value=100, step=10)
+    params['max_depth'] = st.slider('树的深度', min_value=1, max_value=20, value=3, step=1)
+    params['learning_rate'] = st.slider('学习率', min_value=0.01, max_value=0.5, value=0.1, step=0.01)
+    params['gamma'] = st.slider('Gamma', min_value=0.0, max_value=1.0, value=0.0, step=0.1)
+    params['min_child_weight'] = st.slider('Min_child_weight', min_value=0.0, max_value=10.0, value=1.0, step=0.1)
     return params
 
 
 # 定义函数：数据集划分
 def split_data(df):
-    y_col = st.sidebar.selectbox('选择目标变量', df.columns)
+    y_col = st.selectbox('选择目标变量', df.columns)
     X = df.drop(y_col, axis=1)
     y = df[y_col]
-    test_size = st.sidebar.slider('测试集比例', min_value=0.1, max_value=0.5, value=0.3, step=0.1)
-    random_state = st.sidebar.slider('随机数种子', min_value=0, max_value=100, value=42, step=1)
+    test_size = st.slider('测试集比例', min_value=0.1, max_value=0.5, value=0.3, step=0.1)
+    random_state = st.lider('随机数种子', min_value=0, max_value=100, value=42, step=1)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
     return X_train, X_test, y_train, y_test
 
@@ -150,10 +150,6 @@ def eval_model(bst, X_test, y_test):
     dtest = xgb.DMatrix(X_test, label=y_test)
     y_pred_1 = bst.predict(dtest)
     y_pred = pd.DataFrame({'预测值': y_pred_1})
-    r2 = r2_score(y_test, y_pred)
-    mse = mean_squared_error(y_test, y_pred)
-    mae = mean_absolute_error(y_test, y_pred)
-    st.write('Mean Squared Error:', round(mse, 2))
     return y_pred
 
 # 定义函数：下载结果数据集
@@ -181,7 +177,6 @@ if df is not None:
     # 模型评估
     st.write('## 模型评估')
     df_result = eval_model(bst, X_test, y_test)
-    mse = mean_squared_error(df_result["y_test"], df_result["y_pred"])
     st.write(df_result.head(10))
     st.write(f'Mean Squared Error: {df_result["Mean Squared Error"][0]}')
 
