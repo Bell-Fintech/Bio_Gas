@@ -39,7 +39,7 @@ from PIL import Image
 image = Image.open('./images/bio_gas.jpg')
 
 
-st.title('预测模块三')
+st.title('预测模块')
 st.image(image)
 
 
