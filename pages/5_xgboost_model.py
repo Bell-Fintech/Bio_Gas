@@ -42,7 +42,6 @@ image = Image.open('./images/bio_gas.jpg')
 st.title('预测模块')
 st.image(image)
 
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -82,9 +81,12 @@ predict_file = st.file_uploader("Upload CSV for Prediction", type="csv")
 if predict_file is not None:
     predict_data = pd.read_csv(predict_file)
 
+    # 添加空白的标签列
+    predict_data["prediction"] = np.nan
+
     # 归一化
     scaler = MinMaxScaler()
-    predict_data_scaled = scaler.fit_transform(predict_data)
+    predict_data_scaled = scaler.fit_transform(predict_data.iloc[:, :-1])
 
     # 加载模型
     if os.path.exists(model_file):
@@ -95,9 +97,8 @@ if predict_file is not None:
         y_pred = model.predict(predict_data_scaled)
 
         # 输出预测结果
-        st.write(pd.concat([predict_data, pd.Series(y_pred, name="Prediction")], axis=1))
+        predict_data["prediction"] = y_pred
+        st.write(predict_data)
 
         # 下载预测结果
-        st.download_button("Download Prediction", pd.concat([predict_data, pd.Series(y_pred, name="Prediction")], axis=1).to_csv(index=False), "prediction.csv")
-
-
+        st.download_button("Download Prediction", predict_data.to_csv(index=False), "prediction.csv")

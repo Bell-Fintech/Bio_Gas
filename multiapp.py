@@ -7,24 +7,6 @@ import streamlit as st
 
 
 class MultiApp:
-    """Framework for combining multiple streamlit applications.
-    Usage:
-        def foo():
-            st.title("Hello Foo")
-        def bar():
-            st.title("Hello Bar")
-        app = MultiApp()
-        app.add_app("Foo", foo)
-        app.add_app("Bar", bar)
-        app.run()
-    It is also possible keep each application in a separate file.
-        import foo
-        import bar
-        app = MultiApp()
-        app.add_app("Foo", foo.app)
-        app.add_app("Bar", bar.app)
-        app.run()
-    """
 
     def __init__(self):
         self.apps = []
