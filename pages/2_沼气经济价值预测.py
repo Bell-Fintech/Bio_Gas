@@ -76,6 +76,7 @@ if uploaded_file is not None:
     with open(model_file, "wb") as f:
         pickle.dump(model, f)
 
+
 # 预测数据集
 predict_file = st.file_uploader("Upload CSV for Prediction", type="csv")
 if predict_file is not None:
