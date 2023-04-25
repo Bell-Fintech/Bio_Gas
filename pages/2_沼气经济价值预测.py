@@ -53,6 +53,7 @@ import os
 uploaded_file = st.file_uploader("Upload CSV", type="csv")
 if uploaded_file is not None:
     data = pd.read_csv(uploaded_file,encoding='utf-8')
+    st.write(data)
 
     # 特征和标签
     X = data.iloc[:, :-1]
@@ -81,6 +82,7 @@ if uploaded_file is not None:
 predict_file = st.file_uploader("Upload CSV for Prediction", type="csv")
 if predict_file is not None:
     predict_data = pd.read_csv(predict_file,encoding='utf-8')
+    st.write(predict_data)
 
     # 添加空白的标签列
     predict_data["prediction"] = np.nan
