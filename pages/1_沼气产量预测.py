@@ -53,6 +53,7 @@ import os
 uploaded_file = st.file_uploader("Upload CSV", type="csv")
 if uploaded_file is not None:
     data = pd.read_csv(uploaded_file,encoding='utf-8')
+    st.write(data)
 
     # 特征和标签
     X = data.iloc[:, :-1]
